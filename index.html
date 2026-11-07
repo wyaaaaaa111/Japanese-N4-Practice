@@ -4,12 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f4ef">
-  <meta name="description" content="用五道轻量练习，复习日语 JLPT N4 语法与词汇。">
+  <meta name="description" content="每日练习、错题复习与阶段自测，陪伴你的日语 N4 学习。">
   <title>ことば日和 — 日语 N4 练习</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="data/questions.js" defer></script>
+  <script src="data/curriculum.js" defer></script>
+  <script src="data/unit1.js" defer></script>
+  <script src="lib/core.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -39,61 +43,32 @@
         </div>
       </section>
 
-      <section class="learning-layout" aria-label="N4 日语练习">
-        <article class="quiz-card" aria-labelledby="question-title">
-          <div class="quiz-heading">
-            <div class="topic-mark" aria-hidden="true">文</div>
-            <div class="topic-copy"><p class="topic-eyebrow">TODAY'S PRACTICE</p><h2>语法与词汇</h2></div>
-            <div class="question-number" id="question-count"><strong>01</strong><span> / 05</span></div>
-          </div>
-
-          <div class="progress-wrap">
-            <div class="progress-meta"><span>练习进度</span><span id="progress-label">0 / 5 已完成</span></div>
-            <div class="progress-track" id="progress-track" role="progressbar" aria-label="练习完成进度" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"><span id="progress-fill"></span></div>
-          </div>
-
-          <div class="question-area" id="question-area">
-            <p class="question-prompt">选出最适合句意的表达</p>
-            <h3 class="question-title" id="question-title" tabindex="-1"></h3>
-            <p class="translation-line"><span class="translation-mark" aria-hidden="true">译</span><span id="question-translation"></span></p>
-            <form id="answer-form">
-              <fieldset class="choices" id="choices">
-                <legend class="visually-hidden">答案选项</legend>
-              </fieldset>
-              <p class="feedback" id="feedback" role="status" aria-live="polite" hidden></p>
-              <div class="quiz-actions">
-                <span class="action-hint" id="action-hint">选择一个答案继续</span>
-                <button class="button button-primary" id="submit-button" type="submit">确认答案 <span aria-hidden="true">↗</span></button>
-                <button class="button button-primary" id="next-button" type="button" hidden>继续练习 <span aria-hidden="true">→</span></button>
-              </div>
-            </form>
-          </div>
-
-          <section class="result-panel" id="result-panel" aria-labelledby="result-title" hidden>
-            <div class="result-seal" aria-hidden="true"><span>完</span><i>!</i></div>
-            <p class="topic-eyebrow">PRACTICE COMPLETE</p>
-            <h2 id="result-title">今天的练习，完成了。</h2>
-            <p class="result-copy" id="result-copy"></p>
-            <div class="result-score"><strong id="score-number">0</strong><span> / 5<br><small>答对题数</small></span></div>
-            <button class="button button-primary" id="restart-button" type="button">再练习一次 <span aria-hidden="true">↻</span></button>
-          </section>
-        </article>
-
-        <aside class="study-aside" aria-label="本次练习信息">
+      <nav class="study-nav" aria-label="学习模块">
+        <button type="button" data-view="practice" aria-current="page">每日练习</button>
+        <button type="button" data-view="curriculum">教材路线</button>
+        <button type="button" data-view="review">错题复习 <span id="wrong-badge">0</span></button>
+        <button type="button" data-view="stats">学习足迹</button>
+        <button type="button" data-view="exam">阶段自测</button>
+      </nav>
+      <p id="storage-notice" class="notice" role="status" hidden></p>
+      <section class="learning-layout" aria-label="N4 日语学习">
+        <article class="quiz-card" id="workspace" aria-label="学习内容"></article>
+        <aside class="study-aside" aria-label="学习信息">
           <section class="aside-card session-card">
-            <div class="aside-card-head"><span class="aside-label">本次学习</span><span class="tiny-sun" aria-hidden="true">✳</span></div>
-            <div class="session-stat"><strong id="completed-stat">0</strong><span> / 5<br><small>题已完成</small></span></div>
-            <p class="aside-note">稳稳地做完一题，<br>就离目标更近一点。</p>
-            <div class="mini-dots" id="mini-dots" aria-label="每题完成状态"><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="aside-card-head"><span class="aside-label">今日积累</span><span class="tiny-sun" aria-hidden="true">✳</span></div>
+            <div class="session-stat"><strong id="today-stat">0</strong><span> 次<br><small>已提交作答</small></span></div>
+            <p class="aside-note">每天留一点时间，<br>让表达慢慢留下来。</p>
           </section>
           <section class="aside-card tip-card">
-            <div class="tip-icon" aria-hidden="true">あ</div>
-            <p class="tip-label">小小学习提示</p>
-            <p class="tip-copy">先读完整句子，再看选项。留意前后文，语法会更容易记住。</p>
-            <span class="tip-decoration" aria-hidden="true">「 」</span>
+            <div class="tip-icon" aria-hidden="true">あ</div><p class="tip-label">学习小约定</p>
+            <p class="tip-copy">先独立作答，再读解析。错题答对后会移出待复习列表，历史记录依然保留。</p>
           </section>
-          <p class="aside-footnote"><span aria-hidden="true">●</span> 离线也能练习，进度仅保存在当前页面</p>
+          <p class="aside-footnote">记录保存在此浏览器。换设备或清理数据前，请在学习足迹中备份。</p>
         </aside>
+      </section>
+      <section class="content-note" aria-label="内容说明">
+        <p id="bank-summary"></p>
+        <details><summary>题目来源与待补充资料</summary><p>原有五题来源待核实，原文保留；其余题目和阅读、听力文本为本项目原创。听力使用浏览器可用的日语合成语音，并非真人录音。教材路线依据用户提供的目录照片整理；学习卡、例句和题目为另行原创，非教材正文或原题。当前收到七个单元的目录，尚未确认是否为全书完整目录。正式授权音频、教材正文及完整模拟试卷待补充。本题库不代表 N4 全部考试范围，不提供官方分数预测。</p></details>
       </section>
     </main>
 
